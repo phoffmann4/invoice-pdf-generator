@@ -199,9 +199,9 @@ public class InvoicePdfGenerator {
                 String billingPeriod = startDate + " - " + endDate;
 
                 String unit = position.get("Unit__c");
-                if (unit.equals("MONTH")) {
+                if (unit.equals("Month")) {
                     unit = "Monat";
-                } else if (unit.equals("PIECE")) {
+                } else if (unit.equals("Piece")) {
                     unit = "Stück";
                 }
 
