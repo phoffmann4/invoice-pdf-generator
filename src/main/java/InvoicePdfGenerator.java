@@ -1,5 +1,7 @@
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
@@ -37,6 +39,10 @@ import com.itextpdf.svg.converter.SvgConverter;
 
 public class InvoicePdfGenerator {
 
+    private static final Path INPUT = Path.of("input");
+    private static final Path OUTPUT = Path.of("output");
+    private static final Path ARCHIVE = Path.of("archive");
+    private static final Path ERRORS = Path.of("error");
     private static final String INVOICE = "Invoice__r.";
     private static final String ACCOUNT = INVOICE + "Account__r.";
     private static final Path LOGO = Path.of("logo.svg");
@@ -51,16 +57,21 @@ public class InvoicePdfGenerator {
             + "Geschäftsführer: Philipp Hoffmann\n"
             + "Volksbank im Rheinland eG · IBAN: DE87 3106 0517 7000 8780 27 · BIC: GENODED1MRB";
 
-    public static void main(String[] args) throws Exception {
-        if (args.length != 2) {
-            throw new IllegalArgumentException(
-                    "Usage: java -jar invoice-pdf-generator.jar <input-file> <output-directory>");
+    public static void main(String[] args) throws IOException {
+        try (DirectoryStream<Path> files = Files.newDirectoryStream(INPUT, "*.csv")) {
+            for (Path file : files) {
+                Path destination = ARCHIVE;
+
+                try {
+                    generate(file, OUTPUT);
+                } catch (Exception e) {
+                    System.err.printf("%s: %s%n", file, e);
+                    destination = ERRORS;
+                }
+
+                Files.move(file, destination.resolve(file.getFileName()));
+            }
         }
-
-        Path inputFile = Path.of(args[0]);
-        Path outputDirectory = Path.of(args[1]);
-
-        generate(inputFile, outputDirectory);
     }
 
     public static void generate(Path inputFile, Path outputDirectory) throws Exception {
