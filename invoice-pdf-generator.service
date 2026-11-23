@@ -4,5 +4,5 @@ Description=Generate invoice PDFs from CSV files
 [Service]
 Type=oneshot
 User=invoice
-WorkingDirectory=/opt/invoice-doc-generator
+WorkingDirectory=/opt/invoice-pdf-generator
 ExecStart=/usr/bin/java -jar invoice-pdf-generator.jar
