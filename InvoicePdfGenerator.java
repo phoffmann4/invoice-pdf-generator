@@ -258,6 +258,9 @@ public class InvoicePdfGenerator {
 			}
 
 			Paragraph payment = new Paragraph(paymentText);
+			payment.setMargin(0);
+			payment.setMarginBottom(20);
+			payment.setFixedLeading(13);
 
 			Paragraph thanks = new Paragraph("Vielen Dank für die erfolgreiche Zusammenarbeit.");
 			thanks.setMargin(0);
