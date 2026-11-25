@@ -123,13 +123,9 @@ public class InvoicePdfGenerator {
 			logo.setHorizontalAlignment(HorizontalAlignment.RIGHT);
 			document.add(logo);
 
-			String customerName = invoice.get(ACCOUNT + "FirstName") + " " + invoice.get(ACCOUNT + "LastName");
-			String streetNumber = new BigDecimal(invoice.get(ACCOUNT + "Billing_Street_Number__c")).stripTrailingZeros()
-					.toPlainString();
-			String street = invoice.get(ACCOUNT + "Billing_Street__c") + " " + streetNumber
-					+ invoice.get(ACCOUNT + "Billing_Street_Number_Addition__c");
-			String city = invoice.get(ACCOUNT + "Billing_Postal_Code__c") + " "
-					+ invoice.get(ACCOUNT + "Billing_City__c");
+			String customerName = invoice.get(ACCOUNT + "Name");
+			String street = invoice.get(ACCOUNT + "BillingStreet");
+			String city = invoice.get(ACCOUNT + "BillingPostalCode") + " " + invoice.get(ACCOUNT + "BillingCity");
 
 			Paragraph sender = new Paragraph(COMPANY_NAME + " · " + COMPANY_ADDRESS);
 			sender.setMargin(0);
@@ -141,7 +137,7 @@ public class InvoicePdfGenerator {
 			address.setMargin(0);
 			address.setFixedLeading(13);
 
-			Cell addressCell = new Cell(5, 1);
+			Cell addressCell = new Cell(4, 1);
 			addressCell.setPadding(0);
 			addressCell.setBorder(Border.NO_BORDER);
 			addressCell.add(sender);
@@ -156,8 +152,6 @@ public class InvoicePdfGenerator {
 			header.addCell(createCell(invoiceNumber, TextAlignment.RIGHT));
 			header.addCell(createCell("Kunde", TextAlignment.LEFT).setFont(boldFont));
 			header.addCell(createCell(customerNumber, TextAlignment.RIGHT));
-			header.addCell(createCell("Vertrag", TextAlignment.LEFT).setFont(boldFont));
-			header.addCell(createCell(invoice.get(INVOICE + "Contract__r.Name"), TextAlignment.RIGHT));
 			header.addCell(createCell("Datum", TextAlignment.LEFT).setFont(boldFont));
 			header.addCell(createCell(date(invoice.get(INVOICE + "Invoice_Date__c")), TextAlignment.RIGHT));
 			header.addCell(createCell("Fälligkeitsdatum", TextAlignment.LEFT).setFont(boldFont));
