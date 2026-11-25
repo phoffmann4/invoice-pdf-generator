@@ -138,6 +138,7 @@ public class InvoicePdfGenerator {
 			address.setFixedLeading(13);
 
 			Cell addressCell = new Cell(4, 1);
+			addressCell.setMinHeight(65);
 			addressCell.setPadding(0);
 			addressCell.setBorder(Border.NO_BORDER);
 			addressCell.add(sender);
@@ -146,7 +147,7 @@ public class InvoicePdfGenerator {
 			Table header = new Table(UnitValue.createPercentArray(new float[] { 58, 20, 22 }));
 			header.useAllAvailableWidth();
 			header.setFixedLayout();
-			header.setMarginBottom(65);
+			header.setMarginBottom(50);
 			header.addCell(addressCell);
 			header.addCell(createCell("Rechnung", TextAlignment.LEFT).setFont(boldFont));
 			header.addCell(createCell(invoiceNumber, TextAlignment.RIGHT));
