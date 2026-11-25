@@ -123,13 +123,9 @@ public class InvoicePdfGenerator {
 			logo.setHorizontalAlignment(HorizontalAlignment.RIGHT);
 			document.add(logo);
 
-			String customerName = invoice.get(ACCOUNT + "FirstName") + " " + invoice.get(ACCOUNT + "LastName");
-			String streetNumber = new BigDecimal(invoice.get(ACCOUNT + "Billing_Street_Number__c")).stripTrailingZeros()
-					.toPlainString();
-			String street = invoice.get(ACCOUNT + "Billing_Street__c") + " " + streetNumber
-					+ invoice.get(ACCOUNT + "Billing_Street_Number_Addition__c");
-			String city = invoice.get(ACCOUNT + "Billing_Postal_Code__c") + " "
-					+ invoice.get(ACCOUNT + "Billing_City__c");
+			String customerName = invoice.get(ACCOUNT + "Name");
+			String street = invoice.get(ACCOUNT + "BillingStreet");
+			String city = invoice.get(ACCOUNT + "BillingPostalCode") + " " + invoice.get(ACCOUNT + "BillingCity");
 
 			Paragraph sender = new Paragraph(COMPANY_NAME + " · " + COMPANY_ADDRESS);
 			sender.setMargin(0);
@@ -141,7 +137,7 @@ public class InvoicePdfGenerator {
 			address.setMargin(0);
 			address.setFixedLeading(13);
 
-			Cell addressCell = new Cell(5, 1);
+			Cell addressCell = new Cell(4, 1);
 			addressCell.setPadding(0);
 			addressCell.setBorder(Border.NO_BORDER);
 			addressCell.add(sender);
@@ -156,8 +152,6 @@ public class InvoicePdfGenerator {
 			header.addCell(createCell(invoiceNumber, TextAlignment.RIGHT));
 			header.addCell(createCell("Kunde", TextAlignment.LEFT).setFont(boldFont));
 			header.addCell(createCell(customerNumber, TextAlignment.RIGHT));
-			header.addCell(createCell("Vertrag", TextAlignment.LEFT).setFont(boldFont));
-			header.addCell(createCell(invoice.get(INVOICE + "Contract__r.Name"), TextAlignment.RIGHT));
 			header.addCell(createCell("Datum", TextAlignment.LEFT).setFont(boldFont));
 			header.addCell(createCell(date(invoice.get(INVOICE + "Invoice_Date__c")), TextAlignment.RIGHT));
 			header.addCell(createCell("Fälligkeitsdatum", TextAlignment.LEFT).setFont(boldFont));
@@ -243,7 +237,21 @@ public class InvoicePdfGenerator {
 			totals.addCell(grossLabel);
 			totals.addCell(grossValue);
 
-			Paragraph payment = new Paragraph("Der Rechnungsbetrag wird über die vereinbarte Zahlungsart beglichen.");
+			String mandateActive = invoice.get(ACCOUNT + "Mandate_Active__c");
+			String iban = invoice.get(ACCOUNT + "IBAN__c");
+			String paymentText;
+
+			if (mandateActive.equals("true")) {
+				paymentText = "Wir ziehen den Rechnungsbetrag am " + dueDate + " von Ihrem Konto mit der IBAN "
+						+ iban + " mit der Mandatsreferenz " + customerNumber
+						+ " ein. Wir bitten Sie, für ausreichend Deckung auf Ihrem Konto zu sorgen.";
+			} else {
+				paymentText = "Bitte überweisen Sie den Rechnungsbetrag auf unser Konto mit der IBAN "
+						+ "DE87 3106 0517 7000 8780 27. Damit Ihre Zahlung direkt zugeordnet werden kann, "
+						+ "geben Sie bitte als Verwendungszweck ausschließlich Ihre Kundennummer an.";
+			}
+
+			Paragraph payment = new Paragraph(paymentText);
 			payment.setMargin(0);
 			payment.setMarginBottom(20);
 			payment.setFixedLeading(13);
